@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swift Lift — Brian Eyster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:   #f4f9f5;
+      --warm1:   #e8f4ec;
+      --warm2:   #d0e9d8;
+      --amber:   #3a8c57;
+      --amber-d: #2a6e42;
+      --amber-l: #e8f4ec;
+      --brown:   #1a2e22;
+      --brown-m: #3b5e48;
+      --brown-l: #6a9278;
+      --border:  #c4dece;
+      --surface: #f9fdf9;
+      --red:     #c0392b;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Nunito', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--brown);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* ── TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='none'/%3E%3Ccircle cx='1' cy='1' r='0.6' fill='%2380b896' opacity='0.12'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--amber);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(61,43,31,0.18);
+    }
+
+    .nav-logo {
+      font-family: 'Lora', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.88);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #fff; }
+
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 18px;
+      border-radius: 20px;
+      background: #fff;
+      color: var(--amber-d);
+      text-decoration: none;
+      transition: transform 0.15s;
+    }
+    .nav-cta:hover { transform: scale(1.04); }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    section { padding: 56px 0; }
+    section + section { border-top: 2px dashed var(--border); }
+
+    .label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--amber-d);
+      margin-bottom: 8px;
+    }
+
+    h2.section-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(26px, 3.5vw, 38px);
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--brown);
+      margin-bottom: 10px;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      background: linear-gradient(160deg, var(--warm1) 0%, var(--warm2) 100%);
+      border-bottom: 3px solid var(--border);
+      padding: 48px 0 40px;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .hero-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--amber) 0%, var(--amber-d) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Lora', serif;
+      font-size: 38px;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(232,146,58,0.35), 0 0 0 5px #fff, 0 0 0 8px var(--border);
+    }
+
+    .hero-text h1 {
+      font-family: 'Lora', serif;
+      font-size: clamp(30px, 5vw, 52px);
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--brown);
+      margin-bottom: 6px;
+    }
+
+    .hero-tagline {
+      font-size: 16px;
+      color: var(--brown-m);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      max-width: 500px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: #fff;
+      color: var(--brown-m);
+      border: 1.5px solid var(--border);
+    }
+
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 22px;
+      background: var(--amber);
+      color: #fff;
+      border-radius: 24px;
+      font-size: 14px; font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(232,146,58,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(232,146,58,0.35); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 22px;
+      background: #fff;
+      color: var(--brown);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      font-size: 14px; font-weight: 700;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--amber); background: var(--amber-l); }
+
+    /* ── ABOUT ── */
+    #about { background: var(--surface); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .about-text p {
+      font-size: 15px;
+      color: var(--brown-m);
+      line-height: 1.75;
+      margin-bottom: 14px;
+    }
+
+    .values-list { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+
+    .value-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px 16px;
+      background: var(--warm1);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+    }
+    .value-icon { font-size: 22px; flex-shrink: 0; line-height: 1; }
+    .value-item h4 { font-size: 14px; font-weight: 700; color: var(--brown); margin-bottom: 2px; }
+    .value-item p { font-size: 13px; color: var(--brown-m); line-height: 1.5; margin: 0; }
+
+    /* ── PORTFOLIO ── */
+    #portfolio { }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(61,43,31,0.1);
+    }
+
+    .project-thumb {
+      height: 130px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 44px;
+    }
+    .project-thumb.c1 { background: linear-gradient(135deg, #fde8c8, #fbd5a0); }
+    .project-thumb.c2 { background: linear-gradient(135deg, #fef3e2, #fde0b0); }
+    .project-thumb.c3 { background: linear-gradient(135deg, #fde0d0, #fbc8a8); }
+
+    .project-body { padding: 16px 18px; }
+    .project-tag {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--amber-d);
+      background: var(--amber-l); border: 1px solid var(--warm2);
+      padding: 3px 9px; border-radius: 20px;
+      display: inline-block; margin-bottom: 8px;
+    }
+    .project-body h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--brown); }
+    .project-body p { font-size: 13px; color: var(--brown-m); line-height: 1.55; }
+
+    .project-footer {
+      padding: 10px 18px;
+      border-top: 1.5px dashed var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .project-footer span { font-size: 12px; color: var(--brown-l); font-weight: 600; }
+    .project-arrow {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--brown-m);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .project-card:hover .project-arrow {
+      background: var(--amber); border-color: var(--amber); color: #fff;
+    }
+
+    /* ── SKILLS ── */
+    #skills { background: var(--surface); }
+
+    .skills-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 48px;
+      align-items: start;
+      margin-top: 28px;
+    }
+
+    .skills-categories { display: flex; flex-direction: column; gap: 24px; }
+    .skill-category h3 {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--brown-l);
+      margin-bottom: 10px;
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .skill-tag {
+      font-size: 12px; font-weight: 700;
+      padding: 5px 13px; border-radius: 20px;
+      background: var(--warm1); color: var(--brown);
+      border: 1.5px solid var(--border);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .skill-tag:hover { background: var(--warm2); border-color: var(--amber); }
+    .skill-tag.accent {
+      background: var(--amber-l); border-color: var(--warm2); color: var(--amber-d);
+    }
+
+    .expertise-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .expertise-item {
+      padding: 16px 18px;
+      background: var(--warm1);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+    }
+    .expertise-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+    .expertise-header h4 { font-size: 14px; font-weight: 700; color: var(--brown); }
+    .expertise-pct { font-size: 12px; font-weight: 800; color: var(--amber-d); }
+    .bar-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .bar-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--amber), var(--amber-d));
+    }
+    .expertise-desc { font-size: 12px; color: var(--brown-l); margin-top: 8px; line-height: 1.5; }
+
+    /* ── CONTACT ── */
+    #contact { }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+      margin-top: 28px;
+    }
+
+    .contact-info p { font-size: 15px; color: var(--brown-m); line-height: 1.7; margin-bottom: 20px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 10px; }
+    .contact-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      text-decoration: none; color: var(--brown);
+      font-size: 13px; font-weight: 700;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .contact-link:hover { border-color: var(--amber); background: var(--amber-l); }
+    .contact-link-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--warm2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
+    }
+
+    .contact-form {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .contact-form h3 { font-family: 'Lora', serif; font-size: 20px; margin-bottom: 4px; color: var(--brown); }
+    .contact-form > p { font-size: 13px; color: var(--brown-l); margin-bottom: 20px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--brown); margin-bottom: 5px; }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%; padding: 10px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--cream); color: var(--brown);
+      font-family: inherit; font-size: 13px;
+      outline: none; resize: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(232,146,58,0.15);
+    }
+    .form-group textarea { height: 100px; }
+
+    .form-submit {
+      width: 100%; padding: 12px;
+      background: var(--amber); color: #fff;
+      border: none; border-radius: 12px;
+      font-family: inherit; font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(232,146,58,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .form-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(232,146,58,0.35); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--brown);
+      color: rgba(255,255,255,0.55);
+      padding: 28px 24px;
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+    }
+    .footer-inner {
+      max-width: 1040px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-logo { font-family: 'Lora', serif; font-size: 17px; color: #fff; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 13px; transition: color 0.2s; font-weight: 600; }
+    .footer-links a:hover { color: #fff; }
+
+    /* ── DIVIDER ── */
+    .section-header { margin-bottom: 28px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 800px) {
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero-avatar { margin: 0 auto; }
+      .hero-badges, .hero-actions { justify-content: center; }
+      .about-grid, .contact-layout { grid-template-columns: 1fr; gap: 28px; }
+      .project-grid { grid-template-columns: 1fr; }
+      .skills-layout { grid-template-columns: 1fr; gap: 28px; }
+      .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
+      .nav-links { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#hero">Swift Lift</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#portfolio">Services</a></li>
+      <li><a href="#skills">Why Us</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="nav-cta" href="#contact">Say Hello 👋</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-avatar">BE</div>
+        <div class="hero-text">
+          <p style="font-size:12px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:var(--amber-d); margin-bottom:4px;">Brian Eyster · Founder</p>
+          <h1>Swift Lift</h1>
+          <p class="hero-tagline">
+            Your local garage door repair experts — springs, openers, panels, cables, and everything in between. Fast, honest, and done right the first time.
+          </p>
+          <div class="hero-badges">
+            <span class="badge">🏠 Locally Owned</span>
+            <span class="badge">🔧 Garage Door Specialists</span>
+            <span class="badge">⚡ Same-Day Service</span>
+          </div>
+          <div class="hero-actions">
+            <a href="#portfolio" class="btn-primary">Our Services →</a>
+            <a href="#contact" class="btn-ghost">Get a Free Estimate</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">About Swift Lift</span>
+        <h2 class="section-title">Your neighbor,<br/>your garage door guy.</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            My name is Brian Eyster, and I started Swift Lift because I believe great service starts with showing up — on time, with a smile, and with the kind of work ethic you'd expect from a neighbor, not a big box company.
+          </p>
+          <p>
+            We specialize in garage door repair for homeowners across St. Charles and St. Louis County. Whether your spring snapped at 7am or your opener quit on a Friday night, we're the folks you call. No runaround, no upsells — just honest work at a fair price.
+          </p>
+        </div>
+        <div class="values-list">
+          <div class="value-item">
+            <div class="value-icon">⚡</div>
+            <div>
+              <h4>Fast Response</h4>
+              <p>We know a broken garage door can't wait. We aim to be there the same day you call.</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-icon">🤝</div>
+            <div>
+              <h4>Honest &amp; Upfront</h4>
+              <p>You'll know the price before we touch anything. No surprises, ever.</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <div class="value-icon">🔧</div>
+            <div>
+              <h4>Done Right the First Time</h4>
+              <p>We fix it properly so you're not calling us back in a week. Quality work, every time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="portfolio">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">Our Services</span>
+        <h2 class="section-title">Everything your garage door needs.</h2>
+        <p style="font-size:14px; color:var(--brown-m);">We repair and replace all makes and models — springs to sensors, panels to openers.</p>
+      </div>
+      <div class="project-grid">
+        <div class="project-card">
+          <div class="project-thumb c1">🌀</div>
+          <div class="project-body">
+            <span class="project-tag">Most Common</span>
+            <h3>Spring Repair &amp; Replacement</h3>
+            <p>Broken torsion or extension springs are the #1 garage door issue. We carry the parts on our truck and fix it fast — usually same day.</p>
+          </div>
+          <div class="project-footer">
+            <span>Torsion &amp; extension springs</span>
+            <div class="project-arrow">→</div>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-thumb c2">⚙️</div>
+          <div class="project-body">
+            <span class="project-tag">Openers</span>
+            <h3>Opener Repair &amp; Installation</h3>
+            <p>Whether your opener is acting up or you're ready for a new one, we service and install all major brands — LiftMaster, Chamberlain, and more.</p>
+          </div>
+          <div class="project-footer">
+            <span>All major brands</span>
+            <div class="project-arrow">→</div>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-thumb c3">🚪</div>
+          <div class="project-body">
+            <span class="project-tag">Panels &amp; Hardware</span>
+            <h3>Panels, Cables &amp; Rollers</h3>
+            <p>Dented panels, frayed cables, worn rollers, bent tracks — we repair and replace all the parts that keep your door running smoothly.</p>
+          </div>
+          <div class="project-footer">
+            <span>Full hardware service</span>
+            <div class="project-arrow">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">Why Swift Lift</span>
+        <h2 class="section-title">Honest work, every time.</h2>
+      </div>
+      <div class="skills-layout">
+        <div class="skills-categories">
+          <div class="skill-category">
+            <h3>Our Promise</h3>
+            <div class="skill-tags">
+              <span class="skill-tag accent">Same-Day Service</span>
+              <span class="skill-tag">Upfront Pricing</span>
+              <span class="skill-tag">No Hidden Fees</span>
+              <span class="skill-tag">Fully Insured</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>Service Area</h3>
+            <div class="skill-tags">
+              <span class="skill-tag accent">St. Charles County</span>
+              <span class="skill-tag">St. Louis County</span>
+              <span class="skill-tag">Weekends Available</span>
+              <span class="skill-tag">Free Estimates</span>
+            </div>
+          </div>
+          <div class="skill-category">
+            <h3>We Work On</h3>
+            <div class="skill-tags">
+              <span class="skill-tag accent">All Door Brands</span>
+              <span class="skill-tag">LiftMaster</span>
+              <span class="skill-tag">Chamberlain</span>
+              <span class="skill-tag">Genie</span>
+              <span class="skill-tag">Wayne Dalton</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="expertise-list">
+          <div class="expertise-item">
+            <div class="expertise-header">
+              <h4>Spring Repair &amp; Replacement</h4>
+              <span class="expertise-pct">★★★★★</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:99%"></div></div>
+            <p class="expertise-desc">Torsion and extension springs — the most common repair, and the most dangerous to DIY. Leave it to us.</p>
+          </div>
+          <div class="expertise-item">
+            <div class="expertise-header">
+              <h4>Opener Service &amp; Installation</h4>
+              <span class="expertise-pct">★★★★★</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:97%"></div></div>
+            <p class="expertise-desc">We diagnose, repair, and install garage door openers from all major brands, including smart-home models.</p>
+          </div>
+          <div class="expertise-item">
+            <div class="expertise-header">
+              <h4>Cables, Rollers &amp; Tracks</h4>
+              <span class="expertise-pct">★★★★★</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:98%"></div></div>
+            <p class="expertise-desc">Frayed cables and worn rollers are safety hazards. We replace them quickly and correctly.</p>
+          </div>
+          <div class="expertise-item">
+            <div class="expertise-header">
+              <h4>Panel Repair &amp; Replacement</h4>
+              <span class="expertise-pct">★★★★★</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
+            <p class="expertise-desc">Dented or damaged panels? We can often repair individual sections so you don't need a whole new door.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">Contact</span>
+        <h2 class="section-title">Garage door giving you trouble?<br/>We can help.</h2>
+      </div>
+      <div class="contact-layout">
+        <div class="contact-info">
+          <p>
+            Give us a call, shoot us an email, or fill out the form — we'll get back to you fast with a free, no-pressure estimate. Most repairs are done the same day you call.
+          </p>
+          <div class="contact-links">
+            <a href="tel:+13144356215" class="contact-link">
+              <div class="contact-link-icon">📞</div>
+              (314) 435-6215
+            </a>
+            <a href="mailto:swiftliftgaragerepair@gmail.com" class="contact-link">
+              <div class="contact-link-icon">✉️</div>
+              swiftliftgaragerepair@gmail.com
+            </a>
+            <a href="#" class="contact-link">
+              <div class="contact-link-icon">📍</div>
+              St. Charles &amp; St. Louis County, MO
+            </a>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <h3>Get a Free Estimate 👋</h3>
+          <p>We'll get back to you within a few hours.</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" placeholder="Jane" />
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" placeholder="Doe" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="jane@example.com" />
+          </div>
+          <div class="form-group">
+            <label>What's this about?</label>
+            <select>
+              <option value="">What do you need?</option>
+              <option>Spring Repair or Replacement</option>
+              <option>Opener Repair or Installation</option>
+              <option>Cables, Rollers or Tracks</option>
+              <option>Panel Repair or Replacement</option>
+              <option>Full Tune-Up / Maintenance</option>
+              <option>Not sure — just need help!</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea placeholder="What's on your mind?"></textarea>
+          </div>
+          <button class="form-submit">Request My Free Estimate →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Swift Lift</div>
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#portfolio">Work</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <p>© 2026 Swift Lift · Founded by Brian Eyster</p>
+    </div>
+  </footer>
+
+  <script>
+    // Contact form
+    document.querySelector('.form-submit').addEventListener('click', (e) => {
+      e.preventDefault();
+      const btn = e.target;
+      btn.textContent = '✓ Got it! We\'ll be in touch soon.';
+      btn.style.background = '#6b4c38';
+      setTimeout(() => {
+        btn.textContent = 'Send Message →';
+        btn.style.background = '';
+      }, 3500);
+    });
+  </script>
+</body>
+</html>
