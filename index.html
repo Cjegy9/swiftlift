@@ -335,6 +335,56 @@
     }
     .expertise-desc { font-size: 12px; color: var(--brown-l); margin-top: 8px; line-height: 1.5; }
 
+    /* ── SERVICE AREA ── */
+    #service-area { background: var(--surface); }
+
+    .county-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 28px;
+    }
+
+    .county-block {
+      background: var(--cream);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .county-name {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--amber-d);
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px dashed var(--border);
+    }
+
+    .city-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .city-tag {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 11px;
+      border-radius: 20px;
+      background: var(--surface);
+      color: var(--brown-m);
+      border: 1.5px solid var(--border);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .city-tag:hover {
+      background: var(--warm1);
+      border-color: var(--amber);
+      color: var(--brown);
+    }
+
     /* ── CONTACT ── */
     #contact { }
 
@@ -437,6 +487,7 @@
       .hero-badges, .hero-actions { justify-content: center; }
       .about-grid, .contact-layout { grid-template-columns: 1fr; gap: 28px; }
       .service-grid { grid-template-columns: repeat(2, 1fr); }
+      .county-grid { grid-template-columns: repeat(2, 1fr); }
       .skills-layout { grid-template-columns: 1fr; gap: 28px; }
       .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
       .nav-links { display: none; }
@@ -452,6 +503,7 @@
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
       <li><a href="#portfolio">Services</a></li>
+      <li><a href="#service-area">Area</a></li>
       <li><a href="#skills">Why Us</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -590,6 +642,65 @@
           <h3>Opener Diagnostic</h3>
           <p>Not sure what's wrong? We'll diagnose the issue and give you an honest assessment.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE AREA -->
+  <section id="service-area">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">Service Area</span>
+        <h2 class="section-title">Proudly serving<br/>Missouri families.</h2>
+        <p style="font-size:14px; color:var(--brown-m);">If you're in any of these communities, we're your garage door guys.</p>
+      </div>
+      <div class="county-grid">
+
+        <div class="county-block">
+          <div class="county-name">St. Charles County</div>
+          <div class="city-tags">
+            <span class="city-tag">O'Fallon</span>
+            <span class="city-tag">St. Charles</span>
+            <span class="city-tag">Cottleville</span>
+            <span class="city-tag">Dardenne Prairie</span>
+            <span class="city-tag">St. Peters</span>
+            <span class="city-tag">Lake St. Louis</span>
+            <span class="city-tag">Weldon Spring</span>
+            <span class="city-tag">Wentzville</span>
+            <span class="city-tag">New Melle</span>
+            <span class="city-tag">Foristell</span>
+          </div>
+        </div>
+
+        <div class="county-block">
+          <div class="county-name">Lincoln County</div>
+          <div class="city-tags">
+            <span class="city-tag">Moscow Mills</span>
+            <span class="city-tag">Troy</span>
+            <span class="city-tag">Winfield</span>
+            <span class="city-tag">Hawk Point</span>
+            <span class="city-tag">Wright City</span>
+          </div>
+        </div>
+
+        <div class="county-block">
+          <div class="county-name">Warren County</div>
+          <div class="city-tags">
+            <span class="city-tag">Warrenton</span>
+          </div>
+        </div>
+
+        <div class="county-block">
+          <div class="county-name">St. Louis County</div>
+          <div class="city-tags">
+            <span class="city-tag">Chesterfield</span>
+            <span class="city-tag">Defiance</span>
+            <span class="city-tag">Wildwood</span>
+            <span class="city-tag">Ballwin</span>
+            <span class="city-tag">Maryland Heights</span>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
